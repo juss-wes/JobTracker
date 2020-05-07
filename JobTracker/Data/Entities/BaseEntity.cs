@@ -8,6 +8,7 @@ namespace JobTracker.Data.Entities
 {
     public abstract class BaseEntity
     {
+        //TODO: Add data annotations specifying sizes so we dont use varchar(max)
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
         public DateTime CreatedOn { get; set; }

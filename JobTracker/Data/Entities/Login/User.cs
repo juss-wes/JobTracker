@@ -4,6 +4,7 @@ namespace JobTracker.Data.Entities.Login
 {
     public class User : BaseEntity
     {
+        //TODO: Add data annotations specifying sizes so we dont use varchar(max)
         [Required]
         public string FirstName { get; set; }
         [Required]
