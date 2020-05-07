@@ -70,6 +70,7 @@ namespace JobTracker
 
             app.UseCookiePolicy();
             app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
