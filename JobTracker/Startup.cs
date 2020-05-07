@@ -1,7 +1,8 @@
 ﻿using JobTracker.Data;
+using JobTracker.Security;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,14 +24,29 @@ namespace JobTracker
         {
             // Database context
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                );
 
-            // Identities for Login
-            services.AddDefaultIdentity<IdentityUser>()
-                .AddDefaultUI()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                })
+                .AddCookie(options => 
+                { 
+                    options.LoginPath = "/Login";
+                    options.EventsType = typeof(CustomCookieAuthenticationEvents);
+                });
+
+            services.AddScoped<CustomCookieAuthenticationEvents>();
+
+            services.AddMvc().AddRazorPagesOptions(options =>
+            {
+                options.Conventions.AuthorizeFolder("/");
+                options.Conventions.AllowAnonymousToPage("/Login");
+            });
+
             services.AddRazorPages();
         }
 
@@ -52,7 +68,8 @@ namespace JobTracker
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseCookiePolicy();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
