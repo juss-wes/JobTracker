@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace JobTracker.Data.Entities
 {
@@ -11,9 +9,17 @@ namespace JobTracker.Data.Entities
         //TODO: Add data annotations specifying sizes so we dont use varchar(max)
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ID { get; set; }
+
+        [Required]
         public DateTime CreatedOn { get; set; }
+
+        [Required]
+        [StringLength(100, ErrorMessage = "{0} must be no more than {1} characters")]
         public string CreatedBy { get; set; }
+
         public DateTime? LastModifiedOn { get; set; }
+        
+        [StringLength(100, ErrorMessage = "{0} must be no more than {1} characters")]
         public string LastModifiedBy { get; set; }
 
         /// <summary>

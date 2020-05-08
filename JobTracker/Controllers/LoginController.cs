@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -8,6 +7,7 @@ using JobTracker.Models.Login;
 using JobTracker.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobTracker.Controllers
@@ -21,11 +21,22 @@ namespace JobTracker.Controllers
             _dbContext = dbContext;
         }
 
+        /// <summary>
+        /// By default, route users to the Login page
+        /// </summary>
+        /// <returns></returns>
         public IActionResult Index()
         {
             return View("Login", new LoginModel());
         }
 
+        /// <summary>
+        /// Handles a user attempting to log in
+        /// </summary>
+        /// <param name="loginData">The form data supplied by the user</param>
+        /// <returns>
+        /// Model Errors to diplay on login fail, or redirects to the site homepage (/Home/Index)
+        /// </returns>
         [HttpPost, ValidateAntiForgeryToken]
         [Route("Login/TryLoginUserAsync")]
         public async Task<IActionResult> TryLoginUserAsync(LoginModel loginData)
@@ -67,6 +78,42 @@ namespace JobTracker.Controllers
                 ModelState.AddModelError("", "username or password is blank");
                 return View("Login");
             }
+        }
+
+        /// <summary>
+        /// New user registration page
+        /// </summary>
+        /// <returns>The user registration page</returns>
+        public IActionResult Register()
+        {
+            return View(new UserRegistrationModel());
+        }
+
+        /// <summary>
+        /// Handles registration of a new user
+        /// </summary>
+        /// <param name="newUser">The new user's info</param>
+        /// <returns>
+        /// Model Errors to diplay on user registration fail, or redirects to the site homepage (/Home/Index) 
+        /// </returns>
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult RegisterNewUser(UserRegistrationModel newUser)
+        {
+            throw new NotImplementedException();
+            //validate input model
+            //  if invalid, return validation errors
+            //  if another user with the same user name exists, add a validation message and return the validation message to the page
+
+            //hash and store the password
+
+            //if this is the only user in the system, make them an admin
+
+            //update metadata
+
+            //persist to database
+
+            //redirect to the home page
+            //return RedirectToPage("/Home/Index");
         }
     }
 }

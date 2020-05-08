@@ -1,5 +1,4 @@
-﻿using JobTracker.Data.Entities.Login;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace JobTracker.Models.Login
 {
