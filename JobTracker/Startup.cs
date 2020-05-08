@@ -6,7 +6,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using System.IO;
 
 namespace JobTracker
 {
@@ -65,6 +67,13 @@ namespace JobTracker
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            //register the js folder so we can serve javascript to the client
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "js")), 
+                RequestPath = "/js"
+            });
 
             app.UseRouting();
 
