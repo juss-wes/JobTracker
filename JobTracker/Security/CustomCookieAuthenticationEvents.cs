@@ -32,6 +32,7 @@ namespace JobTracker.Security
 
             if (user == null || !user.IsActive)
             {
+                //TODO: if !user.IsActive, maybe show a nicer error message alerting the user that this is why they werent able to log in? For that matter, probably should add an error page...
                 context.RejectPrincipal();
                 await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             }
