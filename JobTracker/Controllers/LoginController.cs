@@ -7,7 +7,6 @@ using JobTracker.Models.Login;
 using JobTracker.Security;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobTracker.Controllers
@@ -15,10 +14,12 @@ namespace JobTracker.Controllers
     public class LoginController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IPasswordHelper _passwordHelper;
 
         public LoginController(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
+            _passwordHelper = new PasswordHelper(new HashingOptions());
         }
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace JobTracker.Controllers
                     return View("Login");
                 }
 
-                var hasher = new PasswordHasher(new HashingOptions());
+                var hasher = new PasswordHelper(new HashingOptions());
                 var hashCheckResult = hasher.Check(user.HashedPassword, loginData.Password);
                 if (hashCheckResult.NeedsUpgrade)
                 {
@@ -62,7 +63,7 @@ namespace JobTracker.Controllers
                 {
                     //return error. Best practice is not to specify whether it was the username or the password that failed
                     ModelState.AddModelError("", "username or password is invalid");
-                    return View("Login");
+                    return View("Login", loginData);
                 }
 
                 //login the user and issue a claims identity stored in a cookie
@@ -99,21 +100,49 @@ namespace JobTracker.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult RegisterNewUser(UserRegistrationModel newUser)
         {
-            throw new NotImplementedException();
-            //validate input model
-            //  if invalid, return validation errors
-            //  if another user with the same user name exists, add a validation message and return the validation message to the page
+            //update metadata
+            newUser.RefreshMetadata(newUser.UserName);
 
             //hash and store the password
+            newUser.HashedPassword = _passwordHelper.Hash(newUser.Password);
+
+            //mark the user as active by default
+            newUser.IsActive = true;
+
+            //validate input model
+            ModelState.Clear();
+            TryValidateModel(newUser);
+            if (!ModelState.IsValid)
+            {
+                //if invalid, return validation errors
+                ModelState.AddModelError("", "Invalid input detected");
+                newUser.Password = "";
+                newUser.HashedPassword = "";
+                return View("Register", newUser);
+            }
+
+            //if another user with the same user name exists, add a validation message and return the validation message to the page
+            if(_dbContext.Users.Any(x => x.UserName == newUser.UserName))
+            {
+                ModelState.AddModelError("UserName", "User Name already exists - please pick a different user name.");
+                newUser.Password = "";
+                newUser.HashedPassword = "";
+                return View("Register", newUser);
+            }
 
             //if this is the only user in the system, make them an admin
+            if (_dbContext.Users.Count() == 0)
+                newUser.IsAdmin = true;
+            else
+                newUser.IsAdmin = false;
 
-            //update metadata
 
             //persist to database
+            _dbContext.Users.Add(newUser);
+            _dbContext.SaveChanges();
 
             //redirect to the home page
-            //return RedirectToPage("/Home/Index");
+            return RedirectToAction("Index", "Home");
         }
     }
 }

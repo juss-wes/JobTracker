@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Options;
-using System;
+﻿using System;
 using System.Linq;
 using System.Security.Cryptography;
 
@@ -9,12 +8,12 @@ namespace JobTracker.Security
     /// Password hash logic to avoid storing passwords in plaintext on the db
     /// </summary>
     /// <remarks>Based on: https://medium.com/dealeron-dev/storing-passwords-in-net-core-3de29a3da4d2</remarks>
-    public sealed class PasswordHasher : IPasswordHelper
+    public sealed class PasswordHelper : IPasswordHelper
     {
         private const int SaltSize = 16; // 128 bit 
         private const int KeySize = 32; // 256 bit
 
-        public PasswordHasher(HashingOptions options)
+        public PasswordHelper(HashingOptions options)
         {
             Options = options;
         }
