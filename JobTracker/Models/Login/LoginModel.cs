@@ -9,5 +9,6 @@ namespace JobTracker.Models.Login
         [Required]
         public string UserName { get; set; }
         public bool RememberMe { get; set; }
+        public string ErrorMessage { get; set; }
     }
 }

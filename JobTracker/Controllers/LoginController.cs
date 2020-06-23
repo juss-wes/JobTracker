@@ -26,9 +26,9 @@ namespace JobTracker.Controllers
         /// By default, route users to the Login page
         /// </summary>
         /// <returns></returns>
-        public IActionResult Index()
+        public IActionResult Index(LoginModel loginData)
         {
-            return View("Login", new LoginModel());
+            return View("Login", loginData ?? new LoginModel());
         }
 
         /// <summary>
@@ -49,8 +49,9 @@ namespace JobTracker.Controllers
                 if (user == null)
                 {
                     //return error. Best practice is not to specify whether it was the username or the password that failed
-                    ModelState.AddModelError("", "username or password is invalid");
-                    return View("Login");
+                    ModelState.AddModelError("ErrorMessage", "User Name or Password is invalid");
+                    RouteData.Values.Remove("Password");
+                    return RedirectToAction("Index", loginData);
                 }
 
                 var hasher = new PasswordHelper(new HashingOptions());
@@ -63,7 +64,8 @@ namespace JobTracker.Controllers
                 {
                     //return error. Best practice is not to specify whether it was the username or the password that failed
                     ModelState.AddModelError("", "username or password is invalid");
-                    return View("Login", loginData);
+                    RouteData.Values.Remove("Password");
+                    return RedirectToAction("Index", loginData);
                 }
 
                 //login the user and issue a claims identity stored in a cookie
@@ -72,12 +74,13 @@ namespace JobTracker.Controllers
                 identity.AddClaim(new Claim(ClaimTypes.Name, loginData.UserName));
                 var principal = new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = loginData.RememberMe });
-                return RedirectToPage("/Home/Index");
+                return RedirectToAction("Index", "Home");
             }
             else
             {
                 ModelState.AddModelError("", "username or password is blank");
-                return View("Login");
+                RouteData.Values.Remove("Password");
+                return RedirectToAction("Index", loginData);
             }
         }
 
