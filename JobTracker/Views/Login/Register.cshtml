@@ -55,9 +55,9 @@
     </div>
     <div class="form-group">
         <label for="@Model.Password">Password:</label>
-        <input asp-for="@Model.Password" placeholder="Password" class="form-control" type="password" aria-describedby="passwordHelpBlock" required pattern="@{<text>^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$</text>}" />
+        <input asp-for="@Model.Password" placeholder="Password" class="form-control" type="password" aria-describedby="passwordHelpBlock" required pattern="@{<text>^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@@#$%^&*]{8,}$</text>}" />
         <div id="passwordHelpBlock" class="invalid-feedback">
-            Your password must be at least 8 characters and contain at least one letter and one number.
+            Your password must be at least 8 characters and contain at least one letter and one number. Allowed special characters: !,@@,#,$,%,^,&amp;,*
         </div>
     </div>
 
