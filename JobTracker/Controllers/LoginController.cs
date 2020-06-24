@@ -50,8 +50,7 @@ namespace JobTracker.Controllers
                 {
                     //return error. Best practice is not to specify whether it was the username or the password that failed
                     ModelState.AddModelError("ErrorMessage", "User Name or Password is invalid");
-                    RouteData.Values.Remove("Password");
-                    return RedirectToAction("Index", loginData);
+                    return View("Login", loginData);
                 }
 
                 var hasher = new PasswordHelper(new HashingOptions());
@@ -64,8 +63,7 @@ namespace JobTracker.Controllers
                 {
                     //return error. Best practice is not to specify whether it was the username or the password that failed
                     ModelState.AddModelError("", "username or password is invalid");
-                    RouteData.Values.Remove("Password");
-                    return RedirectToAction("Index", loginData);
+                    return View("Login", loginData);
                 }
 
                 //login the user and issue a claims identity stored in a cookie
@@ -78,9 +76,8 @@ namespace JobTracker.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "username or password is blank");
-                RouteData.Values.Remove("Password");
-                return RedirectToAction("Index", loginData);
+                ModelState.AddModelError("", "User Name or Password is blank");
+                return View("Login", loginData);
             }
         }
 
