@@ -142,7 +142,7 @@ namespace JobTracker.Controllers
             _dbContext.SaveChanges();
 
             //redirect to the home page
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Inventory");
         }
     }
 }
