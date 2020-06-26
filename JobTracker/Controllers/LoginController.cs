@@ -81,6 +81,17 @@ namespace JobTracker.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Handles a user logging out
+        /// </summary>
+        [Route("Login/LogoutAsync")]
+        public async Task<IActionResult> LogoutAsync()
+        {
+            await HttpContext.SignOutAsync();
+            return RedirectToAction("Index");
+        }
+
         /// <summary>
         /// New user registration page
         /// </summary>
