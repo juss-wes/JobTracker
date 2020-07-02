@@ -16,5 +16,10 @@ namespace JobTracker.Models.Login
         /// </summary>
         [Required]
         public bool RememberMe { get; set; }
+
+        /// <summary>
+        /// Helper for storing any status message we care to show the user
+        /// </summary>
+        public string StatusMessage { get; set; }
     }
 }
