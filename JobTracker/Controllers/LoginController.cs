@@ -31,12 +31,17 @@ namespace JobTracker.Controllers
             return View("Login", loginData ?? new LoginModel());
         }
 
+        public IActionResult ManageAccount()
+        {
+            return View();
+        }
+
         /// <summary>
         /// Handles a user attempting to log in
         /// </summary>
         /// <param name="loginData">The form data supplied by the user</param>
         /// <returns>
-        /// Model Errors to diplay on login fail, or redirects to the site homepage (/Home/Index)
+        /// Model Errors to diplay on login fail, or redirects to the site homepage (/Inventory/Index)
         /// </returns>
         [HttpPost, ValidateAntiForgeryToken]
         [Route("Login/TryLoginUserAsync")]
@@ -67,18 +72,29 @@ namespace JobTracker.Controllers
                 }
 
                 //login the user and issue a claims identity stored in a cookie
-                var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
-                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, loginData.UserName));
-                identity.AddClaim(new Claim(ClaimTypes.Name, loginData.UserName));
-                var principal = new ClaimsPrincipal(identity);
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = loginData.RememberMe });
-                return RedirectToAction("Index", "Home");
+                await LoginUserAsync(loginData.UserName, loginData.RememberMe);
+                return RedirectToAction("Index", "Inventory");
             }
             else
             {
                 ModelState.AddModelError("", "User Name or Password is blank");
                 return View("Login", loginData);
             }
+        }
+
+        /// <summary>
+        /// Log in the user
+        /// </summary>
+        /// <param name="userName">The user name</param>
+        /// <param name="rememberMe">True if the login should be persisted across browser sessions</param>
+        /// <returns>An async task to await completion of</returns>
+        private async Task LoginUserAsync(string userName, bool rememberMe)
+        {
+            var identity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme, ClaimTypes.Name, ClaimTypes.Role);
+            identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userName));
+            identity.AddClaim(new Claim(ClaimTypes.Name, userName));
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, new AuthenticationProperties { IsPersistent = rememberMe });
         }
 
 
@@ -109,7 +125,7 @@ namespace JobTracker.Controllers
         /// Model Errors to diplay on user registration fail, or redirects to the site homepage (/Home/Index) 
         /// </returns>
         [HttpPost, ValidateAntiForgeryToken]
-        public IActionResult RegisterNewUser(UserRegistrationModel newUser)
+        public async Task<IActionResult> RegisterNewUserAsync(UserRegistrationModel newUser)
         {
             //update metadata
             newUser.RefreshMetadata(newUser.UserName);
@@ -151,6 +167,9 @@ namespace JobTracker.Controllers
             //persist to database
             _dbContext.Users.Add(newUser);
             _dbContext.SaveChanges();
+
+            //log in the user
+            await LoginUserAsync(newUser.UserName, newUser.RememberMe);
 
             //redirect to the home page
             return RedirectToAction("Index", "Inventory");

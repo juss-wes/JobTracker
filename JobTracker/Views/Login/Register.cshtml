@@ -38,6 +38,7 @@
             You must enter your first name
         </div>
     </div>
+
     <div class="form-group">
         <label for="@Model.LastName">Last Name:</label>
         <input asp-for="@Model.LastName" placeholder="Last Name" class="form-control" type="text" required aria-describedby="lastNameRequired" />
@@ -53,12 +54,18 @@
             You must enter a user name
         </div>
     </div>
+
     <div class="form-group">
         <label for="@Model.Password">Password:</label>
         <input asp-for="@Model.Password" placeholder="Password" class="form-control" type="password" aria-describedby="passwordHelpBlock" required pattern="@{<text>^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@@#$%^&*]{8,}$</text>}" />
         <div id="passwordHelpBlock" class="invalid-feedback">
             Your password must be at least 8 characters and contain at least one letter and one number. Allowed special characters: !,@@,#,$,%,^,&amp;,*
         </div>
+    </div>
+
+    <div class="form-check">
+        <input asp-for="@Model.RememberMe" type="checkbox" class="form-check-input" />
+        <label for="@Model.RememberMe" class="form-check-label">Remember Me</label>
     </div>
 
     <input type="submit" class="btn btn-primary" value="Login" />
