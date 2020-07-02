@@ -10,5 +10,11 @@ namespace JobTracker.Models.Login
         /// </summary>
         [Required, DataType(DataType.Password)]
         public string Password { get; set; }
+
+        /// <summary>
+        /// True if the login should be persisted across browser sessions
+        /// </summary>
+        [Required]
+        public bool RememberMe { get; set; }
     }
 }
