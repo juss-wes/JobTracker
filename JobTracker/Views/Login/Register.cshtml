@@ -1,0 +1,73 @@
+﻿@model JobTracker.Models.Login.UserRegistrationModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, AuthoringTagHelpers
+@{
+    ViewData["Title"] = "Register";
+}
+
+@section Scripts{
+    <script>
+        // Example starter JavaScript for disabling form submissions if there are invalid fields, sourced from Bootstrap 4 documentation
+        (function () {
+            'use strict';
+            window.addEventListener('load', function () {
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.getElementsByClassName('needs-validation');
+                // Loop over them and prevent submission
+                var validation = Array.prototype.filter.call(forms, function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (form.checkValidity() === false) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+            }, false);
+        })();
+    </script>
+}
+
+<form method="post" asp-action="RegisterNewUser" class="container needs-validation" novalidate>
+    <div asp-validation-summary="All" class="text-danger row"></div>
+
+    <div class="form-group">
+        <label for="@Model.FirstName">First Name:</label>
+        <input asp-for="@Model.FirstName" placeholder="First Name" class="form-control" type="text" required aria-describedby="firstNameRequired" />
+        <div id="firstNameRequired" class="invalid-feedback">
+            You must enter your first name
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="@Model.LastName">Last Name:</label>
+        <input asp-for="@Model.LastName" placeholder="Last Name" class="form-control" type="text" required aria-describedby="lastNameRequired" />
+        <div id="lastNameRequired" class="invalid-feedback">
+            You must enter your last name
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="@Model.UserName">User Name:</label>
+        <input asp-for="@Model.UserName" placeholder="User Name" class="form-control" type="text" required aria-describedby="userNameRequired" />
+        <div id="userNameRequired" class="invalid-feedback">
+            You must enter a user name
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="@Model.Password">Password:</label>
+        <input asp-for="@Model.Password" placeholder="Password" class="form-control" type="password" aria-describedby="passwordHelpBlock" required pattern="@{<text>^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@@#$%^&*]{8,}$</text>}" />
+        <div id="passwordHelpBlock" class="invalid-feedback">
+            Your password must be at least 8 characters and contain at least one letter and one number. Allowed special characters: !,@@,#,$,%,^,&amp;,*
+        </div>
+    </div>
+
+    <div class="form-check">
+        <input asp-for="@Model.RememberMe" type="checkbox" class="form-check-input" />
+        <label for="@Model.RememberMe" class="form-check-label">Remember Me</label>
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="Login" />
+    @Html.AntiForgeryToken()
+</form>

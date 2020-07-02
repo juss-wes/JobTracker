@@ -1,0 +1,25 @@
+﻿@model JobTracker.Models.Login.LoginModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@addTagHelper *, AuthoringTagHelpers
+@{
+    ViewData["Title"] = "Login";
+}
+
+<form method="post" asp-action="TryLoginUserAsync" class="container">
+    @*<div asp-validation-summary="All" class="text-danger row"></div>*@
+    <div class="form-group">
+        <label for="@Model.UserName">User Name:</label>
+        <input asp-for="@Model.UserName" placeholder="User Name" class="form-control" type="text" />
+    </div>
+    <div class="form-group">
+        <label for="@Model.Password">Password:</label>
+        <input asp-for="@Model.Password" placeholder="Password" class="form-control" type="password" />
+    </div>
+    <div class="form-check">
+        <input asp-for="@Model.RememberMe" type="checkbox" class="form-check-input" />
+        <label for="@Model.RememberMe" class="form-check-label">Remember Me</label>
+    </div>
+    <input type="submit" class="btn btn-primary" value="Login" />
+    <span asp-validation-for="ErrorMessage" class="text-danger"></span>
+    @Html.AntiForgeryToken()
+</form>
