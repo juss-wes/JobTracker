@@ -31,9 +31,26 @@ namespace JobTracker.Controllers
             return View("Login", loginData ?? new LoginModel());
         }
 
+        /// <summary>
+        /// Returns the Manage Account page, loaded with the current user's data
+        /// </summary>
+        /// <returns>Returns the Manage Account page, loaded with the current user's data</returns>
         public IActionResult ManageAccount()
         {
-            return View();
+            var user = _dbContext.Users.SingleOrDefault(x => x.UserName == HttpContext.User.Identity.Name);
+            return View(new UserRegistrationModel
+            {
+                CreatedBy = user.CreatedBy,
+                CreatedOn = user.CreatedOn,
+                FirstName = user.FirstName,
+                ID = user.ID,
+                IsActive = user.IsActive,
+                IsAdmin = user.IsAdmin,
+                LastModifiedBy = user.LastModifiedBy,
+                LastModifiedOn = user.LastModifiedOn,
+                LastName = user.LastName,
+                UserName = user.UserName
+            });
         }
 
         /// <summary>
@@ -173,6 +190,62 @@ namespace JobTracker.Controllers
 
             //redirect to the home page
             return RedirectToAction("Index", "Inventory");
+        }
+
+        /// <summary>
+        /// Handles changing an existing user's password
+        /// </summary>
+        /// <param name="existingUser">The user's info</param>
+        /// <returns>
+        /// Model Errors to diplay on user registration fail, or redirects to the site homepage (/Home/Index) 
+        /// </returns>
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult ChangePassword(UserRegistrationModel existingUser)
+        {
+            //hash and store the password
+            existingUser.HashedPassword = _passwordHelper.Hash(existingUser.Password);
+            existingUser.RefreshMetadata(existingUser.UserName);
+
+            //validate input model
+            ModelState.Clear();
+            TryValidateModel(existingUser);
+            if (!ModelState.IsValid)
+            {
+                //if invalid, return validation errors
+                ModelState.AddModelError("", "Invalid input detected");
+                existingUser.Password = "";
+                existingUser.HashedPassword = "";
+                return View("ManageAccount", existingUser);
+            }
+
+
+            // Look for the user
+            var user = _dbContext.Users.SingleOrDefault(x => x.UserName == HttpContext.User.Identity.Name);
+
+            //sanity checks
+            if (existingUser.UserName != user.UserName)
+            {
+                //if invalid, return validation errors
+                ModelState.AddModelError("UserName", "You can't change another user's password!");
+                existingUser.Password = "";
+                existingUser.HashedPassword = "";
+                existingUser.UserName = user.UserName;
+                return View("ManageAccount", existingUser);
+            }
+
+            //update metadata and password on DB copy of data (so we dont risk a request being allowed to update random unrelated fields!)
+            user.RefreshMetadata(existingUser.UserName);
+            user.HashedPassword = existingUser.HashedPassword;//already computed, so no need to do so again
+
+            //persist to database
+            _dbContext.Users.Update(user);
+            _dbContext.SaveChanges();
+
+            //refresh the page
+            existingUser.Password = "";
+            existingUser.HashedPassword = "";
+            existingUser.StatusMessage = "Password successfully changed!";
+            return View("ManageAccount", existingUser);
         }
     }
 }
