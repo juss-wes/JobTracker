@@ -23,6 +23,8 @@ namespace JobTracker.Controllers
         /// <param name="filterContext"></param>
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            if (string.IsNullOrEmpty(HttpContext.User.Identity.Name)) return;
+
             var user = _dbContext.Users.SingleOrDefault(x => x.UserName == HttpContext.User.Identity.Name);
             ViewBag.IsAdmin = user.IsAdmin;
         }

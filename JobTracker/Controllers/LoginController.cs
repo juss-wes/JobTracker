@@ -66,6 +66,7 @@ namespace JobTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+                ModelState.ClearValidationState("ErrorMessage");
                 //validate the user exists
                 var user = _dbContext.Users.SingleOrDefault(x => x.UserName == loginData.UserName);
                 if (user == null)
@@ -84,7 +85,7 @@ namespace JobTracker.Controllers
                 if (!hashCheckResult.Verified)
                 {
                     //return error. Best practice is not to specify whether it was the username or the password that failed
-                    ModelState.AddModelError("", "username or password is invalid");
+                    ModelState.AddModelError("ErrorMessage", "User Name or Password is invalid");
                     return View("Login", loginData);
                 }
 
@@ -94,7 +95,7 @@ namespace JobTracker.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "User Name or Password is blank");
+                ModelState.AddModelError("ErrorMessage", "User Name or Password not specified");
                 return View("Login", loginData);
             }
         }
@@ -236,7 +237,7 @@ namespace JobTracker.Controllers
             //update metadata and password on DB copy of data (so we dont risk a request being allowed to update random unrelated fields!)
             user.RefreshMetadata(existingUser.UserName);
             user.HashedPassword = existingUser.HashedPassword;//already computed, so no need to do so again
-
+            
             //persist to database
             _dbContext.Users.Update(user);
             _dbContext.SaveChanges();
