@@ -145,6 +145,8 @@ namespace JobTracker.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterNewUserAsync(UserRegistrationModel newUser)
         {
+            var adminNewUserSetupMode = ViewBag.IsAdmin ?? false;
+
             //update metadata
             newUser.RefreshMetadata(newUser.UserName);
 
@@ -186,11 +188,19 @@ namespace JobTracker.Controllers
             _dbContext.Users.Add(newUser);
             _dbContext.SaveChanges();
 
-            //log in the user
-            await LoginUserAsync(newUser.UserName, newUser.RememberMe);
+            if (adminNewUserSetupMode)
+            {
+                //redirect back to user management screen
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+            else
+            {
+                //log in the user
+                await LoginUserAsync(newUser.UserName, newUser.RememberMe);
 
-            //redirect to the home page
-            return RedirectToAction("Index", "Inventory");
+                //redirect to the home page
+                return RedirectToAction("Index", "Inventory");
+            }
         }
 
         /// <summary>

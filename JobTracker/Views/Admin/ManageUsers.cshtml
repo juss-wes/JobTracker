@@ -27,7 +27,7 @@
             <td>@user.IsActive</td>
             <td>@user.IsAdmin</td>
             <td>
-                <button>
+                <button type="button" class="btn btn-primary">
                     Edit
                 </button>
             </td>
@@ -35,4 +35,4 @@
         }
     </tbody>
 </table>
-<button>Add New User</button>
+<a type="button" class="btn btn-primary" asp-area="" asp-controller="Login" asp-action="Register">Add New User</a>

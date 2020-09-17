@@ -63,11 +63,17 @@
         </div>
     </div>
 
-    <div class="form-check">
-        <input asp-for="@Model.RememberMe" type="checkbox" class="form-check-input" />
-        <label for="@Model.RememberMe" class="form-check-label">Remember Me</label>
-    </div>
-
-    <input type="submit" class="btn btn-primary" value="Login" />
+    @if (ViewBag.IsAdmin)
+    {
+        <input type="submit" class="btn btn-primary" value="Register New User" />
+    }
+    else
+    {
+        <div class="form-check">
+            <input asp-for="@Model.RememberMe" type="checkbox" class="form-check-input" />
+            <label for="@Model.RememberMe" class="form-check-label">Remember Me</label>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Login" />
+    }
     @Html.AntiForgeryToken()
 </form>
