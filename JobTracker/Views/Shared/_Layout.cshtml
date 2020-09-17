@@ -35,9 +35,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="TimeReporting" asp-action="Index">Time Reporting</a>
                         </li>
+                        @if (ViewBag?.IsAdmin ?? false)
+                        {
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
                         </li>
+                        }
                     </ul>
                 </div>
             </div>

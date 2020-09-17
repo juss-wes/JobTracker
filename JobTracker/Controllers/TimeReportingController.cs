@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using JobTracker.Models;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using JobTracker.Data;
 
 namespace JobTracker.Controllers
 {
     [Authorize]
-    public class TimeReportingController : Controller
+    public class TimeReportingController : BaseController
     {
+        private readonly ApplicationDbContext _dbContext;
+        public TimeReportingController(ApplicationDbContext dbContext)
+            : base(dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
         public IActionResult Index()
         {
             return View();

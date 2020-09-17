@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using JobTracker.Data;
@@ -11,12 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JobTracker.Controllers
 {
-    public class LoginController : Controller
+    public class LoginController : BaseController
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IPasswordHelper _passwordHelper;
 
         public LoginController(ApplicationDbContext dbContext)
+            : base(dbContext)
         {
             _dbContext = dbContext;
             _passwordHelper = new PasswordHelper(new HashingOptions());
