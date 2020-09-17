@@ -37,9 +37,16 @@
                         </li>
                         @if (ViewBag?.IsAdmin ?? false)
                         {
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
-                        </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle text-dark" asp-area="" asp-controller="Admin" asp-action="Index" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Admin
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="Index">Manage Application Data</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Admin" asp-action="ManageUsers">Manage Users</a>
+                                </div>
+                            </li>
                         }
                     </ul>
                 </div>

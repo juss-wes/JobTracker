@@ -18,5 +18,10 @@ namespace JobTracker.Controllers
         {
             return View();
         }
+
+        public IActionResult ManageUsers()
+        {
+            return View();
+        }
     }
 }
