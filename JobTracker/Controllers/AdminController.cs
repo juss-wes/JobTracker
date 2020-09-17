@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using JobTracker.Data;
+using System.Linq;
 
 namespace JobTracker.Controllers
 {
@@ -21,7 +22,7 @@ namespace JobTracker.Controllers
 
         public IActionResult ManageUsers()
         {
-            return View();
+            return View(_dbContext.Users.ToList());
         }
     }
 }
