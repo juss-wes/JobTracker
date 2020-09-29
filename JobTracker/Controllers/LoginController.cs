@@ -178,7 +178,7 @@ namespace JobTracker.Controllers
             }
 
             //if this is the only user in the system, make them an admin
-            if (_dbContext.Users.Count() == 0)
+            if (_dbContext.Users.Where(x => x.IsActive).Count() == 0)
                 newUser.IsAdmin = true;
             else
                 newUser.IsAdmin = false;
