@@ -103,8 +103,11 @@ namespace JobTracker.Controllers
             // Look for the user
             var user = _dbContext.Users.SingleOrDefault(x => x.ID == updatedUser.ID);
 
+            var test = _dbContext.Users.Where(x => x.IsActive).ToList();
+            var testcount = test.Count(x => x.IsAdmin);
+
             //make sure we arent revoking admin privs for the only active admin in the system! this also covers the scenario where we are inactivating the last user
-            if(user.IsAdmin && _dbContext.Users.Where(x => x.IsActive).Count(x => x.IsAdmin) == 1)
+            if (user.IsAdmin && _dbContext.Users.Where(x => x.IsActive && x.ID != user.ID).Count(x => x.IsAdmin) == 0)
             {
                 //if invalid, return validation errors
                 ModelState.AddModelError("IsAdmin", "Warning - this user is the last admin in the system! You must create another account with admin access before you can deactivate this account's admin status.");
