@@ -1,0 +1,55 @@
+﻿@model JobTracker.Models.Login.UserRegistrationModel
+@{
+    Layout = "";
+}
+@if (Model == null)
+{
+    <div asp-validation-summary="All" class="text-danger row"></div>
+}
+else
+{
+    @Html.HiddenFor(m => m.ID)
+    <div asp-validation-summary="All" class="text-danger row"></div>
+    <div class="form-group">
+        <label for="@Model.FirstName">First Name:</label>
+        <input asp-for="@Model.FirstName" placeholder="First Name" class="form-control" type="text" required aria-describedby="firstNameRequired" />
+        <div id="firstNameRequired" class="invalid-feedback">
+            You must enter a first name!
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="@Model.LastName">Last Name:</label>
+        <input asp-for="@Model.LastName" placeholder="Last Name" class="form-control" type="text" required aria-describedby="lastNameRequired" />
+        <div id="lastNameRequired" class="invalid-feedback">
+            You must enter a last name!
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="@Model.UserName">User Name:</label>
+        <input asp-for="@Model.UserName" placeholder="User Name" class="form-control" type="text" required aria-describedby="userNameRequired" />
+        <div id="userNameRequired" class="invalid-feedback">
+            You must enter a user name!
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="@Model.Password">Password:</label>
+        <input asp-for="@Model.Password" placeholder="(Optional) Enter new password" class="form-control" type="password" data-toggle="tooltip" data-placement="bottom" title="Leave blank if you don't want to override the user's password" aria-describedby="passwordHelpBlock" required pattern="@{<text>^$|(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@@#$%^&*]{8,}$</text>}" />
+        <div id="passwordHelpBlock" class="invalid-feedback">
+            The password must be at least 8 characters and contain at least one letter and one number. Allowed special characters: !,@@,#,$,%,^,&amp;,*
+        </div>
+    </div>
+
+    <div class="form-check">
+        <input asp-for="@Model.IsAdmin" type="checkbox" class="form-check-input" />
+        <label for="@Model.IsAdmin" class="form-check-label">Is Admin</label>
+    </div>
+
+    <div class="form-check">
+        <input asp-for="@Model.IsActive" type="checkbox" class="form-check-input" />
+        <label for="@Model.IsActive" class="form-check-label">Is Active</label>
+    </div>
+    @Html.AntiForgeryToken()
+}
