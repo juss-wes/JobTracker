@@ -132,6 +132,8 @@ namespace JobTracker.Controllers
         /// <returns>The user registration page</returns>
         public IActionResult Register()
         {
+            if (ViewBag.IsAdmin == null)
+                ViewBag.IsAdmin = false;
             return View(new UserRegistrationModel());
         }
 
