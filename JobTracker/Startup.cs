@@ -14,13 +14,9 @@ namespace JobTracker
 {
     public class Startup
     {
-        public Startup(IWebHostEnvironment env)
+        public Startup(IConfiguration configuration)
         {
-            Configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json")
-                .AddEnvironmentVariables()
-                .Build();
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -30,7 +26,7 @@ namespace JobTracker
         {
             // Database context
             services.AddDbContext<ApplicationDbContext>(options =>
-                    options.UseSqlServer(Configuration?.GetConnectionString("DatabaseConnectionString") ?? Configuration.GetConnectionString("DefaultConnection"))
+                    options.UseSqlServer(Configuration?.GetConnectionString("DatabaseConnectionString") ?? Configuration.GetValue<string>("DevelopmentConnectionString"))
                 );
 
             services.AddAuthentication(options =>
