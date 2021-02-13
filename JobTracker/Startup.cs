@@ -71,7 +71,7 @@ namespace JobTracker
             //register the js folder so we can serve javascript to the client
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "js")), 
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "js")),
                 RequestPath = "/js"
             });
 
