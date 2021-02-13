@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using JobTracker.Data;
@@ -11,12 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JobTracker.Controllers
 {
-    public class LoginController : Controller
+    public class LoginController : BaseController
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IPasswordHelper _passwordHelper;
 
         public LoginController(ApplicationDbContext dbContext)
+            : base(dbContext)
         {
             _dbContext = dbContext;
             _passwordHelper = new PasswordHelper(new HashingOptions());
@@ -66,6 +66,7 @@ namespace JobTracker.Controllers
         {
             if (ModelState.IsValid)
             {
+                ModelState.ClearValidationState("ErrorMessage");
                 //validate the user exists
                 var user = _dbContext.Users.SingleOrDefault(x => x.UserName == loginData.UserName);
                 if (user == null)
@@ -84,7 +85,7 @@ namespace JobTracker.Controllers
                 if (!hashCheckResult.Verified)
                 {
                     //return error. Best practice is not to specify whether it was the username or the password that failed
-                    ModelState.AddModelError("", "username or password is invalid");
+                    ModelState.AddModelError("ErrorMessage", "User Name or Password is invalid");
                     return View("Login", loginData);
                 }
 
@@ -94,7 +95,7 @@ namespace JobTracker.Controllers
             }
             else
             {
-                ModelState.AddModelError("", "User Name or Password is blank");
+                ModelState.AddModelError("ErrorMessage", "User Name or Password not specified");
                 return View("Login", loginData);
             }
         }
@@ -131,6 +132,8 @@ namespace JobTracker.Controllers
         /// <returns>The user registration page</returns>
         public IActionResult Register()
         {
+            if (ViewBag.IsAdmin == null)
+                ViewBag.IsAdmin = false;
             return View(new UserRegistrationModel());
         }
 
@@ -144,6 +147,8 @@ namespace JobTracker.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<IActionResult> RegisterNewUserAsync(UserRegistrationModel newUser)
         {
+            var adminNewUserSetupMode = ViewBag.IsAdmin ?? false;
+
             //update metadata
             newUser.RefreshMetadata(newUser.UserName);
 
@@ -175,7 +180,7 @@ namespace JobTracker.Controllers
             }
 
             //if this is the only user in the system, make them an admin
-            if (_dbContext.Users.Count() == 0)
+            if (_dbContext.Users.Where(x => x.IsActive).Count() == 0)
                 newUser.IsAdmin = true;
             else
                 newUser.IsAdmin = false;
@@ -185,11 +190,19 @@ namespace JobTracker.Controllers
             _dbContext.Users.Add(newUser);
             _dbContext.SaveChanges();
 
-            //log in the user
-            await LoginUserAsync(newUser.UserName, newUser.RememberMe);
+            if (adminNewUserSetupMode)
+            {
+                //redirect back to user management screen
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+            else
+            {
+                //log in the user
+                await LoginUserAsync(newUser.UserName, newUser.RememberMe);
 
-            //redirect to the home page
-            return RedirectToAction("Index", "Inventory");
+                //redirect to the home page
+                return RedirectToAction("Index", "Inventory");
+            }
         }
 
         /// <summary>
@@ -236,7 +249,7 @@ namespace JobTracker.Controllers
             //update metadata and password on DB copy of data (so we dont risk a request being allowed to update random unrelated fields!)
             user.RefreshMetadata(existingUser.UserName);
             user.HashedPassword = existingUser.HashedPassword;//already computed, so no need to do so again
-
+            
             //persist to database
             _dbContext.Users.Update(user);
             _dbContext.SaveChanges();
